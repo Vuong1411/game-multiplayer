@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        .status { margin: 20px; padding: 10px; }
+        .connected { color: green; }
+        .disconnected { color: red; }
+        .message-box { margin: 20px; }
+        #messages { 
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Socket.IO Test</h1>
+    <div id="connection-status" class="status"></div>
+    <div id="socket-id" class="status"></div>
+    <div id="error" class="status disconnected"></div>
+
+    <!-- Test Message Form -->
+    <div class="message-box">
+        <input type="text" id="message" placeholder="Type a test message">
+        <button onclick="sendTestMessage()">Send Test Message</button>
+    </div>
+    <div id="messages"></div>
+
+    <script>
+        try {
+            const socket = io('http://localhost:5000', {
+                transports: ['websocket', 'polling'],
+                reconnection: true
+            });
+
+            const statusDiv = document.getElementById('connection-status');
+            const socketIdDiv = document.getElementById('socket-id');
+            const errorDiv = document.getElementById('error');
+            const messagesDiv = document.getElementById('messages');
+
+            function sendTestMessage() {
+                const message = document.getElementById('message').value;
+                socket.emit('test-event', { message });
+                addMessage('Sent: ' + message);
+                document.getElementById('message').value = '';
+            }
+
+            function addMessage(text) {
+                const p = document.createElement('p');
+                p.textContent = text;
+                messagesDiv.appendChild(p);
+            }
+
+            // Connection events
+            socket.on('connect', () => {
+                statusDiv.textContent = 'Status: Connected';
+                statusDiv.className = 'status connected';
+                socketIdDiv.textContent = `Socket ID: ${socket.id}`;
+                errorDiv.textContent = '';
+            });
+
+            // Test response handler
+            socket.on('test-response', (data) => {
+                addMessage('Received: ' + JSON.stringify(data));
+            });
+
+            // Error handling
+            socket.on('connect_error', (error) => {
+                console.error('Connection error:', error);
+                errorDiv.textContent = `Connection error: ${error.message}`;
+                statusDiv.textContent = 'Status: Error connecting';
+                statusDiv.className = 'status disconnected';
+            });
+
+            socket.on('disconnect', () => {
+                statusDiv.textContent = 'Status: Disconnected';
+                statusDiv.className = 'status disconnected';
+                socketIdDiv.textContent = 'Socket ID: None';
+            });
+        } catch (err) {
+            console.error('Script error:', err);
+            document.getElementById('error').textContent = `Error: ${err.message}`;
+        }
+    </script>
+</body>
+</html>
