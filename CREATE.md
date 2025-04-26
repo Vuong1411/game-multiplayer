@@ -30,6 +30,7 @@ npm init -y
 
 # Cài đặt dependencies cho server
 npm install express cors dotenv mongoose socket.io
+npm install mysql2
 npm install jsonwebtoken bcryptjs
 npm install --save-dev nodemon
 cd ..

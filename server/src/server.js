@@ -1,15 +1,14 @@
-require('dotenv').config();
-
-const express = require('express');
-const cors = require('cors');
-const http = require('http');
-const socketIO = require('socket.io');
-const webRoutes = require('./routes/web');
-const apiRoutes = require('./routes/api');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import webRoutes from './routes/web.js';
+import apiRoutes from './routes/api.js';
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server, {
+const server = createServer(app);
+const io = new Server(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"],
@@ -41,8 +40,6 @@ io.on('connection', (socket) => {
 
 // Root route
 app.use('/', webRoutes);
-
-// Test API Route
 app.use('/api', apiRoutes);
 
 // Error handling middleware

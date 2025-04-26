@@ -1,13 +1,12 @@
-const mongoose = require('mongoose');
+import mysql from 'mysql2';
 
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/game-multiplayer');
-        console.log('MongoDB Connected');
-    } catch (err) {
-        console.error('MongoDB Connection Error:', err);
-        process.exit(1);
-    }
-};
+// Create a MySQL connection using environment variables
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+});
 
-module.exports = connectDB;
+export default connection;
