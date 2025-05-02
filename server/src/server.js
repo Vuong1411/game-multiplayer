@@ -1,10 +1,12 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import webRoutes from './routes/web.js';
 import apiRoutes from './routes/api.js';
+
+dotenv.config();
 
 const app = express();
 const server = createServer(app);
